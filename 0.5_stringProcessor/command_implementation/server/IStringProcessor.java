@@ -1,4 +1,4 @@
-package StringProcessor.client;
+package StringProcessor.server;
 
 
 
@@ -7,12 +7,12 @@ public interface IStringProcessor{
 
 
 	/*pass in a string, returns the string with no whitespace*/
-	public String trim(String toTrim)throws Exception;
+	public String trim(String toTrim);
 
 	// pass in a string, returns the same string in all lowercase
-	public String toLower(String stringToChange)throws Exception;
+	public String toLower(String stringToChange);
 
 	//pass in a String that contains a double, returns the double found in it
-	public Double parseDouble(String toParse)throws Exception;
+	public Double parseDouble(String toParse);
 
 }
