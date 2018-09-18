@@ -8,7 +8,7 @@ public class Client{
 
 
 	public static void main(String[] args)throws Exception{
-		
+
 		System.out.println("Hello World");
 		StringProcessorProxy mProxy = StringProcessorProxy.getInstance();
 		System.out.println("Enter the number ot the type of operation you want:\n"
@@ -24,6 +24,7 @@ public class Client{
 			System.out.println("enter the string you want to switch to lowercase");
 			s = new Scanner(System.in);
 			String stringToEdit = s.nextLine();
+			System.out.println();
 			try{
 				String editedString = mProxy.toLower(stringToEdit);
 				System.out.println(editedString);
@@ -38,9 +39,12 @@ public class Client{
 			System.out.println("enter the string you want to trim");
 			s = new Scanner(System.in);
 			String stringToEdit = s.nextLine();
+			System.out.println("Your untrimmed string is '" + stringToEdit + "'");
+						System.out.println();
+
 			try{
 				String editedString = mProxy.trim(stringToEdit);
-				System.out.println(editedString);
+				System.out.println("The trimmed string is '" + editedString + "'");
 			}
 			catch(Exception e){
 				throw e;
@@ -52,8 +56,10 @@ public class Client{
 			System.out.println("enter the double you want to parse");
 			s = new Scanner(System.in);
 			String stringToEdit = s.nextLine();
+						System.out.println();
 			try{
 				Double returnedDouble = mProxy.parseDouble(stringToEdit);
+
 				System.out.println(returnedDouble);
 			}
 			catch(Exception e){

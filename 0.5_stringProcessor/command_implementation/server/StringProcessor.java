@@ -28,6 +28,7 @@ public class StringProcessor implements IStringProcessor {
 
 	//pass in a String that contains a double, returns the double found in it
 	public Double parseDouble (String toParse) throws NumberFormatException{
+		System.out.println("In server parse Double");
 		Double toReturn = Double.parseDouble(toParse);
 		System.out.println("In the Server StringProcessor Double method.  The double to return is: " + toReturn);
 		return toReturn;

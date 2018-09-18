@@ -32,13 +32,13 @@ public class ClientCommunicator{
 		encoder = new Encoder();
 	}
 
-	public String askServer(String editType, String stringToEdit)throws Exception{
-		String jsonToSend = encoder.encodeData(stringToEdit);
+	public String askServer(DataTransferObject toSend)throws Exception{
+		String jsonToSend = encoder.encodeData(toSend);
 		HttpURLConnection connection = null;
-		connection = sendToServer(editType, jsonToSend, connection);
+		connection = sendToServer(jsonToSend, connection);
 		try{
 			String response = (getResponse(connection));
-			System.out.println(response);
+
 			return response;
 		}
 		catch (IOException e) {
@@ -49,8 +49,8 @@ public class ClientCommunicator{
 		}
 	}
 
-	private HttpURLConnection sendToServer(String editType, String stringToSend, HttpURLConnection connection)throws IOException{
-		URL url = createURL(editType);
+	private HttpURLConnection sendToServer(String stringToSend, HttpURLConnection connection)throws IOException{
+		URL url = createURL();
 		byte[] bytesToSend = stringToSend.getBytes(StandardCharsets.UTF_8);
 		int requestLength = bytesToSend.length;
 		try{
@@ -81,9 +81,7 @@ public class ClientCommunicator{
 			//System.out.println(responseCode);
 			String serverResponse = readInputStream(connection);
 			if (responseCode == HttpURLConnection.HTTP_NOT_AUTHORITATIVE){
-				String heyo = (encoder.decodeError(serverResponse));
-				System.out.println(heyo);
-				return heyo;
+				return encoder.decodeError(serverResponse);
 			}
 			else if(responseCode == HttpURLConnection.HTTP_OK){
 				return (encoder.decodeResponse(serverResponse));
@@ -118,9 +116,9 @@ public class ClientCommunicator{
 	}
 
 
-	private URL createURL(String urlAppendage){
+	private URL createURL(){
 		try{
-		 	URL url = new URL("http://"+ "127.0.0.1" + ":" + "8080" + "/" + urlAppendage);
+		 	URL url = new URL("http://"+ "127.0.0.1" + ":" + "8080" + "/");
 		 return url;
 		}
 		catch(MalformedURLException e){

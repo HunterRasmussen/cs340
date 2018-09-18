@@ -36,9 +36,6 @@ public class Server {
 		mServer.setExecutor(null);
 
 		System.out.println("Creating Contexts");
-		mServer.createContext("/trim", trimHandler);
-		mServer.createContext("/lowercase", toLowercaseHandler);
-		mServer.createContext("/parse", parseDoubleHandler);
 		mServer.createContext("/", defaultHandler);
 
 
@@ -53,79 +50,49 @@ public class Server {
 		@Override
 		public void handle(HttpExchange exchange){
 			System.out.println("Default Handler!");
-		}
-	};
-
-	private HttpHandler trimHandler = new HttpHandler(){
-		@Override
-		public void handle(HttpExchange exchange){
 			try{
-				System.out.println("TrimHandler here on the server!");
 				InputStream reqBody = exchange.getRequestBody();
-				String stringToEdit = encoder.readString(reqBody);
-				String editedString = stringProcessor.trim(stringToEdit);
-				String toSend = encoder.encodeData("String",editedString);
-				sendData(HttpURLConnection.HTTP_OK, toSend, exchange);
-				System.out.println("Finished the trimHandler.  Client should receive response");
+				DataTransferObject decodedData = encoder.readDTO(reqBody, new DataTransferObject());
+				String editedString;
+				String toSend = null;
+				String command = decodedData.getCommand();
+				String stringToEdit = decodedData.getDataToEdit();
+				System.out.println("Command: " + decodedData.getCommand());
+				if(command.equals("trim")){
+				  editedString = stringProcessor.trim(stringToEdit);
+					toSend = encoder.encodeData("String",editedString);
+				}
+				else if(command.equals("lowercase")){
+					editedString = stringProcessor.toLower(stringToEdit);
+					System.out.println("After going to the stringProcessor, our string is\n" + editedString);
+					toSend = encoder.encodeData("String",editedString);
+					System.out.println("After encoding to send to client, we have\n" + toSend);
+				}
+				else if(command.equals("parse")){
+					Double foundDouble = stringProcessor.parseDouble(stringToEdit);
+					toSend = encoder.encodeData("Double",foundDouble.toString());
+
+				}
+				if(toSend != null){
+					System.out.println("About to send the following back from the server\n" + toSend);
+					sendData(HttpURLConnection.HTTP_OK, toSend, exchange);
+				}
+				System.out.println("Finished on the Server.  Client should receive response");
 				//sendData(toSend);
 			}
 			catch (IOException e){
-                String toSend = encoder.encodeData("Error",e.getMessage());
+                String toSend = encoder.encodeData("Error","IOException");
+                System.out.println(e.getMessage());
+                sendData(HttpURLConnection.HTTP_NOT_AUTHORITATIVE, toSend, exchange);
+			}
+			catch (NumberFormatException e){
+                String toSend = encoder.encodeData("Error", "NumberFormatException");
                 System.out.println(e.getMessage());
                 sendData(HttpURLConnection.HTTP_NOT_AUTHORITATIVE, toSend, exchange);
 			}
 		}
-
 	};
-	private HttpHandler toLowercaseHandler = new HttpHandler(){
-		@Override
-		public void handle(HttpExchange exchange){
-			try{
-				System.out.println("Lowercase Handler here on the server!");
-				InputStream reqBody = exchange.getRequestBody();
-				String stringToEdit = encoder.readString(reqBody);
-				String editedString = stringProcessor.toLower(stringToEdit);
-				String toSend = encoder.encodeData("String",editedString);
-				sendData(HttpURLConnection.HTTP_OK, toSend, exchange);
-				System.out.println("Finished the lowercase handler.  Client should receive response");
-			}
-			catch (IOException e){
-                String toSend = encoder.encodeData("Error",e.getMessage());
-                System.out.println(e.getMessage());
-                sendData(HttpURLConnection.HTTP_NOT_AUTHORITATIVE, toSend, exchange);
-			}
 
-		}
-
-	};
-	private HttpHandler parseDoubleHandler = new HttpHandler(){
-		@Override
-		public void handle(HttpExchange exchange){
-			System.out.println("Parse Double Handler here on the server!");
-			try{
-				InputStream reqBody = exchange.getRequestBody();
-				String stringToEdit = encoder.readString(reqBody);
-				Double foundDouble = stringProcessor.parseDouble(stringToEdit);
-				String toSend = encoder.encodeData("Double",foundDouble.toString());
-				sendData(HttpURLConnection.HTTP_OK, toSend, exchange);
-				System.out.println("Finished the parseDouble handler.  Client should receive response");
-			}
-			catch (IOException e){
-				System.out.println("Caught an IOException");
-                String toSend = encoder.encodeData("Error",e.getMessage());
-                System.out.println(e.getMessage());
-                sendData(HttpURLConnection.HTTP_NOT_AUTHORITATIVE, toSend, exchange);
-			}
-			catch(NumberFormatException e){
-				System.out.println("Caught a NumberFormatException");
-				String toSend = encoder.encodeData("Error", "NumberFormatException");
-				sendData(HttpURLConnection.HTTP_NOT_AUTHORITATIVE, toSend, exchange);
-
-			}
-
-		}
-
-	};
 
 	private void sendData(int responseCode, String responseBody, HttpExchange httpExchange){
 		try{

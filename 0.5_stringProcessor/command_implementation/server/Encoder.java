@@ -20,7 +20,7 @@ public class Encoder{
 
 
 
-	public String readString(InputStream is) throws IOException {
+	public DataTransferObject readDTO(InputStream is, DataTransferObject DTO) throws IOException {
     	StringBuilder sb = new StringBuilder();
     	InputStreamReader sr = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(sr);
@@ -33,9 +33,38 @@ public class Encoder{
     	JsonObject json = gson.fromJson(sb.toString(), JsonObject.class);
     	String toReturn = null;
     	if(json.has("String")){
-    		toReturn = json.get("String").getAsString();
+    		DTO.setDataToEdit(json.get("String").getAsString());
     	}
-    	return toReturn;
+			if(json.has("command")){
+				DTO.setCommand(json.get("command").getAsString());
+			}
+			if(json.has("Double")){
+				DTO.setDataToEdit(json.get("Double").getAsString());
+			}
+
+
+    	return DTO;
+	}
+
+	public String getData(InputStream is, String data) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		InputStreamReader sr = new InputStreamReader(is);
+		BufferedReader reader = new BufferedReader(sr);
+		String line = reader.readLine();
+		while(line != null){
+			sb.append(line);
+			line = reader.readLine();
+		}
+		//reader.close();
+		JsonObject json = gson.fromJson(sb.toString(), JsonObject.class);
+		String toReturn = null;
+		if(json.has(data)){
+			toReturn = json.get(data).getAsString();
+		}
+	//	if(data.equals("String")){
+	//		reader.close();
+	//	}
+		return toReturn;
 	}
 
 

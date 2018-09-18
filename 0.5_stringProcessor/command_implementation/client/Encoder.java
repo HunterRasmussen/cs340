@@ -8,10 +8,12 @@ import java.io.IOException;
 
 public class Encoder{
 
-	public String encodeData(String stringToEdit){
+	public String encodeData(DataTransferObject dto){
 		JsonObject jsonData = new JsonObject();
-		jsonData.addProperty("String",stringToEdit);
+		jsonData.addProperty("command", dto.getCommand());
+		jsonData.addProperty("String", dto.getDataToEdit());
 		Gson gsonObject = new GsonBuilder().disableHtmlEscaping().create();
+		//System.out.println("The encoded DTO is as follows\n" + gsonObject.toJson(jsonData));
 		String toReturn = gsonObject.toJson(jsonData);
 		//System.out.println("From the Encoder encodeData method, the following is being returned\n" +toReturn);
 		return toReturn;

@@ -24,7 +24,8 @@ public class StringProcessorProxy implements IStringProcessor{
 
 	public String trim(String toTrim) throws Exception{
 		try{
-			return communicator.askServer("trim",toTrim);
+			DataTransferObject toSend = new DataTransferObject("trim", toTrim);
+			return communicator.askServer(toSend);
 
 		}
 		catch (IOException e) {
@@ -35,7 +36,8 @@ public class StringProcessorProxy implements IStringProcessor{
 	// pass in a string, returns the same string in all lowercase
 	public String toLower(String stringToChange) throws Exception{
 		try{
-			return communicator.askServer("lowercase",stringToChange);
+			DataTransferObject toSend = new DataTransferObject("lowercase", stringToChange);
+			return communicator.askServer(toSend);
 		}
 		catch (IOException e) {
 			throw e;
@@ -51,11 +53,12 @@ public class StringProcessorProxy implements IStringProcessor{
 		//    it goes into string form again.  Instead of writing a bunch of duplicate methods so that I can return a double up the
 		//   chain, I instead just parse it here a second time.
 		try{
-			String parsedDouble = communicator.askServer("parse",toParse);
-			//Double foundDouble = Double.parseDouble(parsedDouble);
-			System.out.println(parsedDouble);
-			return null;
-			//return foundDouble;
+			DataTransferObject toSend = new DataTransferObject("parse", toParse);
+			String parsedDouble = communicator.askServer(toSend);
+			Double foundDouble = Double.parseDouble(parsedDouble);
+			//System.out.println(parsedDouble);
+			//return null;
+			return foundDouble;
 		}
 		catch (IOException e) {
 			throw e;
